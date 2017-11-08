@@ -29,7 +29,7 @@ if [ ! -f "$tincPath/hosts/$tincName" ]; then
 Address = ${myIP}
 #Subnet = 0.0.0.0/0
 EOF
-tincd -n $vpnName -K4096
+echo "/etc/tinc/scaleway/rsa_key.priv" | tincd -n $vpnName -K4096
 fi
 
 if0=tun0
