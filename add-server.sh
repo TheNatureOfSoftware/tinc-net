@@ -49,12 +49,12 @@ fi
 
 cat <<'END' > ${tincPath}/tinc-up
 #!/bin/sh
-GATEWAY=echo $(route -n | grep '^0.0.0.0 .*UG'|awk '{print \$2}') | tee /etc/tinc/scaleway/gw
-ifconfig INTERFACE ${tincIP} netmask 255.255.255.0
+GATEWAY=\$(route -n | grep '^0.0.0.0 .*UG'|awk '{print \$2}' | tee /etc/tinc/scaleway/gw)
+ifconfig \$INTERFACE ${tincIP} netmask 255.255.255.0
 sleep 2
 route add -host ${myIP} gw \$GATEWAY
-route add default gw ${tincGwIP}
 route del default gw \$GATEWAY
+route add default gw ${tincGwIP}
 END
 
 cat <<'END' > ${tincPath}/tinc-down
@@ -69,7 +69,6 @@ END
 chmod +x ${tincPath}/tinc-{up,down}
 modprobe tun
 EOF
-sed -i -e 's/INTERFACE/$INTERFACE/g' $remoteScriptFile
 scp $remoteScriptFile root@$server:~/setup-tinc.sh
 ssh root@$server 'bash -x ~/setup-tinc.sh'
 
