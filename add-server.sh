@@ -8,13 +8,11 @@ server=$1
 interface=$2
 tincIP=$3
 tincName=$4
-orgDefaultGateway=$5
 
 if [ ! "$1" ]; then echo "server (IP or hostname) is required as argument #1"; exit 1; fi
 if [ ! "$2" ]; then echo "network interface is required as argument #2"; exit 1; fi
 if [ ! "$3" ]; then echo "IP-address required as argument #3"; exit 1; fi
 if [ ! "$4" ]; then echo "tinc name is required as argument #4"; exit 1; fi
-if [ ! "$5" ]; then echo "default gateway to resore is required as argument #5"; exit 1; fi
 
 vpnName=scaleway
 tincPath=/etc/tinc/$vpnName
@@ -51,17 +49,20 @@ fi
 
 cat <<'END' > ${tincPath}/tinc-up
 #!/bin/sh
+GATEWAY=echo $(route -n | grep '^0.0.0.0 .*UG'|awk '{print \$2}') | tee /etc/tinc/scaleway/gw
 ifconfig INTERFACE ${tincIP} netmask 255.255.255.0
-route add -host ${myIP} gw ${orgDefaultGateway}
+sleep 2
+route add -host ${myIP} gw \$GATEWAY
 route add default gw ${tincGwIP}
-route del default gw ${orgDefaultGateway}
+route del default gw \$GATEWAY
 END
 
 cat <<'END' > ${tincPath}/tinc-down
 #!/bin/sh
+GATEWAY=$(cat /etc/tinc/scaleway/gw)
 ifconfig INTERFACE down
-route add default gw ${orgDefaultGateway}
-route del -host ${myIP} gw ${orgDefaultGateway}
+route add default gw \$GATEWAY
+route del -host ${myIP} gw \$GATEWAY
 route del default gw ${tincGwIP}
 END
 
