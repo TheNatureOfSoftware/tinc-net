@@ -20,14 +20,15 @@ if [ ! -f "$tincPath/tinc.conf" ]; then
 Name = ${tincName}
 AddressFamily = ipv4
 Interface = tun0
-Mode = switch
+BindToInterface = eth0
+Mode = router
 EOF
 fi
 
 if [ ! -f "$tincPath/hosts/$tincName" ]; then
     cat <<EOF > $tincPath/hosts/$tincName
 Address = ${myIP}
-#Subnet = 0.0.0.0/0
+Subnet = 0.0.0.0/0
 EOF
 echo "/etc/tinc/scaleway/rsa_key.priv" | tincd -n $vpnName -K4096
 fi

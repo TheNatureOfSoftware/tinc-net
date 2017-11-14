@@ -36,13 +36,14 @@ if [ ! -f ${tincPath}/tinc.conf ]; then
 Name = ${tincName}
 AddressFamily = ipv4
 Interface = tun0
-Mode = switch
+BindToInterface = eth0
+Mode = router
 ConnectTo = ${myName}
 END
 fi
 if [ ! -f ${tincPath}/hosts/${tincName} ]; then
 	cat <<END > ${tincPath}/hosts/${tincName}
-#Subnet = ${tincIP}/32
+Subnet = ${tincIP}/32
 END
 	tincd -n $vpnName -K4096
 fi
