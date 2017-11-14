@@ -71,7 +71,7 @@ chmod +x ${tincPath}/tinc-{up,down}
 modprobe tun
 EOF
 scp $remoteScriptFile root@$server:~/setup-tinc.sh
-ssh root@$server 'bash -x ~/setup-tinc.sh'
+ssh root@$server 'bash ~/setup-tinc.sh'
 
 rsync -Pavvzessh ${tincPath}/hosts/$myName $server:${tincPath}/hosts/
 rsync -Pavvzessh $server:${tincPath}/hosts/${tincName} ${tincPath}/hosts/
